@@ -20,7 +20,7 @@ The game allows you to set a wager on the odds of a coin toss being 'heads' or '
 
 If you win, you will receive a toast confirmation and the amount you wagered will be added to your account.
 
-- If you win 3X in a row, you get 5X your wager added to your account.
+- If you win 3X in a row, you get 3X your wager added to your account.
 
 - If you win 5X in a row, you get 10X your wager added to your account.
 
@@ -56,3 +56,5 @@ Run in terminal 2:
 This will run the app locally on your computer on port 3000 and serve the backend on port 5000.
 
 Navigate to http://localhost:3000/
+
+![Image of Game](./game-ss.jpg?raw=true)
