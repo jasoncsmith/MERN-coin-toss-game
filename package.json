@@ -1,0 +1,7 @@
+{
+    "scripts": {
+        "installDependencies": "cd ./backend && npm i && cd ../frontend && npm i",
+        "start:client": "cd ./frontend && npm start",
+        "start:server": "cd ./backend && npm start"
+    }
+}
