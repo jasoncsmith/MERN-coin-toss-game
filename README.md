@@ -2,6 +2,7 @@
 
 ### Technologies Used
 - MongoDb
+- Mongoose
 - Express
 - React
 - Node
