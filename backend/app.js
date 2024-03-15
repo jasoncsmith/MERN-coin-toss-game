@@ -20,4 +20,21 @@ app.use(cors())
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/game', gameRoutes)
 
+app.all('*', (req, res, next) => {
+  const err = new Error(`Route not found: ${req.originalUrl}`)
+  err.status = 'fail'
+  err.statusCode = 404
+
+  next(err)
+})
+
+app.use((err, req, res, next) => {
+  const { status = 'error', statusCode = 500, message } = err
+
+  res.status(statusCode).json({
+    status,
+    message,
+  })
+})
+
 export default app

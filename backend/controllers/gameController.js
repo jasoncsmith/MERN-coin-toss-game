@@ -77,7 +77,9 @@ export const patchGame = async (req, res) => {
         tokens: 100,
       },
       { new: true }
-    )
+    ).catch(err => {
+      console.log(err)
+    })
 
     if (!updatedGame) {
       return res.status(400).json({ message: 'no bank' })
