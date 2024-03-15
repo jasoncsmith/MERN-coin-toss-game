@@ -1,10 +1,11 @@
+import { promisify } from 'util'
 import jwt from 'jsonwebtoken'
 import User from '../models/user.js'
 
 const verifyToken = async (req, res, next) => {
   try {
     const token = req.headers.authorization.replace(/^Bearer\s/, '')
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY)
+    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET_KEY)
 
     if (!decoded) {
       return res.status(401).json({ message: 'Please log in' })
