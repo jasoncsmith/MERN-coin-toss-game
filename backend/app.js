@@ -29,7 +29,7 @@ app.all('*', (req, res, next) => {
 })
 
 app.use((err, req, res, next) => {
-  const { status = 'error', statusCode = 500, message } = err
+  const { status = 'error', statusCode = 500, message = '' } = err
 
   res.status(statusCode).json({
     status,

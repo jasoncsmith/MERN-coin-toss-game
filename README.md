@@ -44,7 +44,8 @@ You will need to host a MongoDB locally or in the cloud.
 Once established create a .env file in the backend dir and add the following fields:
 ### `PORT=5000`
 ### `MONGODB_URL="{{MongoDb connection URI}}"`
-### `SECRET_KEY="{{Your uuid for the JWT}}"`
+### `JWT_SECRET_KEY="{{Your uuid for the JWT}}"`
+### `JWT_EXPIRES="{{Token expiration, ex: '1h'}}"`
 
 ### To Serve
 In Root directory open 2 terminals.

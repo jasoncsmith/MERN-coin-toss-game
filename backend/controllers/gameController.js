@@ -38,16 +38,11 @@ export const createGame = async user_id => {
 
 export const getGame = async (req, res) => {
   try {
-    const userId = req.userId
+    const { userId: user_id } = req
 
-    const existingUser = await User.findOne({ _id: userId }) // TODO: replace this validation w/ middleware
-    if (!existingUser) {
-      return res.status(404).json({ message: 'User Does Not Exist' })
-    }
-
-    const existingGame = await Game.findOne({ user_id: userId })
+    const existingGame = await Game.findOne({ user_id })
     if (!existingGame) {
-      return res.status(400).json({ message: 'no bank' })
+      return res.status(400).json({ message: 'Game not found' })
     }
 
     const { tokens = 0, plays = [], winningStreak = [] } = existingGame
@@ -63,16 +58,11 @@ export const getGame = async (req, res) => {
 }
 
 export const patchGame = async (req, res) => {
-  const { userId } = req
+  const { userId: user_id } = req
 
   try {
-    const existingUser = await User.findOne({ _id: userId })
-    if (!existingUser) {
-      return res.status(404).json({ message: 'User Does Not Exist' })
-    }
-
     const updatedGame = await Game.findOneAndUpdate(
-      { user_id: userId },
+      { user_id },
       {
         tokens: 100,
       },
@@ -82,7 +72,7 @@ export const patchGame = async (req, res) => {
     })
 
     if (!updatedGame) {
-      return res.status(400).json({ message: 'no bank' })
+      return res.status(400).json({ message: 'Game not found' })
     }
 
     return res.status(200).json({
@@ -95,20 +85,15 @@ export const patchGame = async (req, res) => {
 
 export const wager = async (req, res) => {
   const { wager, coinSide } = req.body
-  const { userId } = req
+  const { userId: user_id } = req
 
   try {
-    const existingUser = await User.findOne({ _id: userId })
-    if (!existingUser) {
-      return res.status(404).json({ message: 'User Does Not Exist' })
-    }
-
-    const game = await Game.findOne({ user_id: req.userId })
+    const game = await Game.findOne({ user_id })
     if (!game) {
       return res.status(400).json({ message: 'no bank' })
     }
 
-    let tokens = game.tokens
+    let { tokens } = game
     if (tokens <= 0) {
       return res.status(400).json({ message: 'you out of gold son' })
     }
@@ -146,7 +131,7 @@ export const wager = async (req, res) => {
     }
 
     const updatedGame = await Game.findOneAndUpdate(
-      { user_id: userId },
+      { user_id },
       {
         tokens: tokens + winnings.payout,
         winningStreak,

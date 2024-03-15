@@ -2,16 +2,15 @@ import jwt from 'jsonwebtoken'
 import { createGame } from './gameController.js'
 import { createUser, getUser } from './userController.js'
 
-const createSignedToken = ({ _id, name, email, password }) => {
+const createSignedToken = ({ _id, name, email }) => {
   return jwt.sign(
     {
       _id,
       name,
       email,
-      password,
     },
-    process.env.SECRET_KEY,
-    { expiresIn: '1h' }
+    process.env.JWT_SECRET_KEY,
+    { expiresIn: process.env.JWT_EXPIRES }
   )
 }
 
