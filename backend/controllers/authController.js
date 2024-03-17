@@ -1,4 +1,6 @@
 import jwt from 'jsonwebtoken'
+import catchAsyncError from '../utils/catchAsyncError.js'
+import AppError from '../utils/appError.js'
 import { createGame } from './gameController.js'
 import { createUser, getUser } from './userController.js'
 
@@ -14,46 +16,37 @@ const createSignedToken = ({ _id, name, email }) => {
   )
 }
 
-export const signup = async (req, res) => {
+export const signup = catchAsyncError(async (req, res, next) => {
   const { email, password, confirmPassword } = req.body
 
-  try {
-    const existingUser = await getUser(email)
-    if (existingUser) {
-      return res.status(400).json({ message: 'User Already Exist' })
-    }
-
-    if (password !== confirmPassword) {
-      return res.status(400).json({ message: 'Password Does Not Match' })
-    }
-
-    const newUser = await createUser(req.body)
-    await createGame(newUser._id)
-
-    res.status(200).json({ token: createSignedToken(newUser) })
-  } catch (error) {
-    res.status(500).json({ message: 'Something went wrong' })
+  const existingUser = await getUser(email)
+  if (existingUser) {
+    return next(new AppError('User already has an account', 400))
   }
-}
 
-export const login = async (req, res) => {
+  if (password !== confirmPassword) {
+    return next(new AppError('Passwords do not match', 400))
+  }
+
+  const newUser = await createUser(req.body)
+  await createGame(newUser._id)
+
+  res.status(200).json({ token: createSignedToken(newUser) })
+})
+
+export const login = catchAsyncError(async (req, res, next) => {
   const { email, password } = req.body
+  const existingUser = await await getUser(email)
 
-  try {
-    const existingUser = await await getUser(email)
-
-    if (!existingUser) {
-      return res.status(404).json({ message: 'User Does Not Exist' })
-    }
-
-    const isPasswordCorrect = await existingUser.arePasswordsTheSame(password, existingUser.password)
-
-    if (!isPasswordCorrect) {
-      return res.status(400).json({ message: 'Invalid Password' })
-    }
-
-    res.status(200).json({ token: createSignedToken(existingUser) })
-  } catch (error) {
-    res.status(500).json({ message: 'Something went wrong' })
+  if (!existingUser) {
+    return next(new AppError('User not found', 404))
   }
-}
+
+  const isPasswordCorrect = await existingUser.arePasswordsTheSame(password, existingUser.password)
+
+  if (!isPasswordCorrect) {
+    return next(new AppError('Invalid Password', 401))
+  }
+
+  res.status(200).json({ token: createSignedToken(existingUser) })
+})
