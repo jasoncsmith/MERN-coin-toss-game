@@ -3,6 +3,9 @@ import dotenv from 'dotenv'
 import cors from 'cors'
 import morgan from 'morgan'
 
+import AppError from './utils/appError.js'
+import globalErrorHandler from './controllers/errorController.js'
+
 dotenv.config()
 
 import authRoutes from './routes/authRoute.js'
@@ -21,20 +24,9 @@ app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/game', gameRoutes)
 
 app.all('*', (req, res, next) => {
-  const err = new Error(`Route not found: ${req.originalUrl}`)
-  err.status = 'fail'
-  err.statusCode = 404
-
-  next(err)
+  next(new AppError(`Route not found: ${req.originalUrl}`, 404))
 })
 
-app.use((err, req, res, next) => {
-  const { status = 'error', statusCode = 500, message = '' } = err
-
-  res.status(statusCode).json({
-    status,
-    message,
-  })
-})
+app.use(globalErrorHandler)
 
 export default app
